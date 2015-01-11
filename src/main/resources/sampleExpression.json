@@ -1,0 +1,50 @@
+{
+  "operator": "&&",
+  "expressions": [
+    {
+      "operator": "&&",
+      "expressions": [
+        {
+          "operator": "||",
+          "expressions": [
+            {
+              "operator": "==",
+              "expressions": [],
+              "conditionValues": [
+                "aa",
+                "bb"
+              ]
+            },
+            {
+              "operator": "!=",
+              "expressions": [],
+              "conditionValues": [
+                "cc",
+                "dd"
+              ]
+            }
+          ],
+          "conditionValues": []
+        },
+        {
+          "operator": "@@",
+          "expressions": [],
+          "conditionValues": [
+            "ee",
+            "ff"
+          ]
+        }
+      ],
+      "conditionValues": []
+    },
+    {
+      "operator": "!@",
+      "expressions": [],
+      "conditionValues": [
+        "gg",
+        "hh"
+      ]
+    }
+  ],
+  "conditionValues": []
+}
