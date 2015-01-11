@@ -29,11 +29,14 @@ public class Parser {
         int previousEnd = 0;
         while(matcher.find()) {
             int start = matcher.start();
+            if(start < previousEnd) {
+                continue;
+            }
             int end = matcher.end();
 
             //handle the operate value before the current operator(if there is)
             String valString = rawExpression.substring(previousEnd, start);
-            if(valString.length() > 0) {
+            if(valString.trim().length() > 0) {
                 Value value = createValue(valString);
                 outputQueue.add(value);
             }
@@ -61,6 +64,12 @@ public class Parser {
                     outputQueue.add(operatorStack.poll());
                 }
                 operatorStack.push(operator);
+                // if it is 'in' or 'not in', get the list value now and push it into the outputQueue
+                if(operator.getText().endsWith(Operator.IN.getText())) {
+                    valString = Operator.parseOperatorInArgs(opString);
+                    Value value = createValue(valString);
+                    outputQueue.add(value);
+                }
             }
 
             previousEnd = end;
@@ -68,9 +77,12 @@ public class Parser {
 
         // there can be a value after the last operator
         if(previousEnd < rawExpression.length()) {
-            String valString = rawExpression.substring(previousEnd);
-            Value value = createValue(valString);
-            outputQueue.add(value);
+            String valString = rawExpression.substring(previousEnd).trim();
+            if(valString.length() > 0 ){
+                Value value = createValue(valString);
+                outputQueue.add(value);
+            }
+
         }
 
         Operator opOnTop = operatorStack.peekFirst();
@@ -103,7 +115,7 @@ public class Parser {
                     expression.addConditionAllValue(valueStack);
                     valueStack.clear();
                 }
-                expression.setOperator(ee.getText());
+                expression.setOperator((Operator)ee);
                 expressionStack.add(expression);
             } else {
                 throw new Exception("misuse of operator");
@@ -129,10 +141,10 @@ public class Parser {
     }
 
     private static Value createValue(String valueString) {
-        if(valueString==null || valueString.length()==0) {
+        if(valueString==null || valueString.trim().length()==0) {
             throw new NullPointerException("empty string");
         } else {
-            return new Value(valueString);
+            return new Value(valueString.trim());
         }
 
     }

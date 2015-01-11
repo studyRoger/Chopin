@@ -12,7 +12,7 @@ import java.util.Iterator;
  * Created by roger on 1/10/15.
  */
 public class Expression {
-    private String operator;
+    private Operator operator;
     private Collection<Expression> expressions = new ArrayList<>();
     private Collection<String> conditionValues = new ArrayList<>();
 
@@ -24,11 +24,11 @@ public class Expression {
         this.expressions = expressions;
     }
 
-    public String getOperator() {
+    public Operator getOperator() {
         return operator;
     }
 
-    public void setOperator(String operator) {
+    public void setOperator(Operator operator) {
         this.operator = operator;
     }
 
@@ -57,16 +57,16 @@ public class Expression {
     }
 
     public String toString() {
-        String plain = toPlainString("");
+        String plain = toPlainString(null);
         String json = toJson();
         return plain + "\n" + json;
         //return plain;
     }
 
-    public String toPlainString(String outerOperator) {
+    public String toPlainString(Operator outerOperator) {
         boolean needBracket = false;
-        if(outerOperator!= null && outerOperator.length() > 0) {
-             needBracket = Operator.getOperator(outerOperator).getPriority() > Operator.getOperator(operator).getPriority();
+        if(outerOperator!= null) {
+             needBracket = outerOperator.getPriority() >operator.getPriority();
         }
 
         StringBuilder output = new StringBuilder();
@@ -78,7 +78,7 @@ public class Expression {
             output.append(itExpression.next().toPlainString(operator));
         }
         while(itExpression.hasNext()) {
-            output.append(" " + operator +" ");
+            output.append(" " + operator.getText() +" ");
             output.append(itExpression.next().toPlainString(operator));
         }
         Iterator<String> itCondition = conditionValues.iterator();
@@ -87,7 +87,7 @@ public class Expression {
             output.append(itCondition.next());
         }
         while (itCondition.hasNext()) {
-            output.append(" " + operator +" ");
+            output.append(" " + operator.getText() +" ");
             output.append(itCondition.next());
         }
 
@@ -99,7 +99,6 @@ public class Expression {
     }
 
     public String toJson() {
-        //TODO: output bug
         Gson output = new GsonBuilder()
                 .setPrettyPrinting()
                 .disableHtmlEscaping()
